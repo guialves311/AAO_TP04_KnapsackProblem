@@ -1,6 +1,7 @@
 from DataGenerator import generate_instance
 from pathlib import Path
 from JSONReader import json_reader
+from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 #from dotenv import load_dotenv
 import os
 
@@ -9,7 +10,11 @@ import os
 #max_capacity= int(os.getenv("MAX_CAPACITY"), 50)
 #num_items= int(os.getenv("NUM_ITEMS"), 10)
 
-if Path("src\\data\\test_data.json").exists():
-    data = json_reader("src\\data\\test_data.json")
-else:
-    data = generate_instance(10, 50, "src\\data\\test_data.json")
+def main():
+    if Path("src\\data\\test_data.json").exists():
+        data = json_reader("src\\data\\test_data.json")
+    else:
+        data = generate_instance(10, 50, "src\\data\\test_data.json")
+
+    ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
+    final_solution, value = enhanced_greedy(ordered_items, data['sack_capacity'])

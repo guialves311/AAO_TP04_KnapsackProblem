@@ -3,53 +3,53 @@
     "items": [
         {
             "id": 0,
-            "weight": 21,
-            "value": 39
+            "weight": 9,
+            "value": 21
         },
         {
             "id": 1,
-            "weight": 18,
-            "value": 33
+            "weight": 23,
+            "value": 29
         },
         {
             "id": 2,
-            "weight": 45,
-            "value": 46
+            "weight": 50,
+            "value": 56
         },
         {
             "id": 3,
-            "weight": 31,
-            "value": 43
+            "weight": 29,
+            "value": 32
         },
         {
             "id": 4,
-            "weight": 34,
-            "value": 48
+            "weight": 3,
+            "value": 21
         },
         {
             "id": 5,
-            "weight": 50,
-            "value": 62
+            "weight": 34,
+            "value": 54
         },
         {
             "id": 6,
-            "weight": 44,
-            "value": 62
+            "weight": 4,
+            "value": 15
         },
         {
             "id": 7,
-            "weight": 5,
-            "value": 8
+            "weight": 24,
+            "value": 25
         },
         {
             "id": 8,
-            "weight": 2,
-            "value": 12
+            "weight": 20,
+            "value": 29
         },
         {
             "id": 9,
-            "weight": 42,
-            "value": 45
+            "weight": 39,
+            "value": 55
         }
     ]
 }
