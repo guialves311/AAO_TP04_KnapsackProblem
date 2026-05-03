@@ -17,4 +17,4 @@ def main():
     else:
         data = generate_instance(10, 50, "src\\data\\test_data.json")
         
-    items, capacity = greedy(data['items'], data['sack_capacity'])
+    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])    
