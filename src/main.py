@@ -17,7 +17,9 @@ def main():
     else:
         data = generate_instance(10, 50, data_file)
         
-    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])
-    print(value, items, weight, selected_item)
-    
-main()    
+    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
+
+    ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
+    final_solution, value = enhanced_greedy(ordered_items, data['sack_capacity'])
+
+main()
