@@ -3,6 +3,7 @@ from pathlib import Path
 from JSONReader import json_reader
 from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 from algorithms.greedy import greedy
+from algorithms.simulated_annealing import simulated_annealing
 from dotenv import load_dotenv
 import os
 
@@ -21,5 +22,17 @@ def main():
 
     ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
     final_solution, value = enhanced_greedy(ordered_items, data['sack_capacity'])
-
+    best_solution, best_value = simulated_annealing(
+        final_solution,
+        value,
+        sum(item['weight'] for item in final_solution),
+        data['items'],
+        data['sack_capacity']
+    )
+    
+    #Testing outputs
+    #print("Greedy value:", value)
+    #print("Greedy items:", [item['id'] for item in final_solution])
+    #print("SA best value:", best_value)
+    #print("SA items:", [item['id'] for item in best_solution])
 main()

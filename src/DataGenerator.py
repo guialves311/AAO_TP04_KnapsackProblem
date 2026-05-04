@@ -20,3 +20,5 @@ def generate_instance(num_items: int, max_capacity: int, data_file: str):
     
     with open(data_file, "w") as f:
         json.dump(data, f, indent=4)
+        
+    return data
