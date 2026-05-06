@@ -10,14 +10,15 @@ import os
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
-max_capacity= int(os.getenv("MAX_CAPACITY", 50))
-num_items= int(os.getenv("NUM_ITEMS", 10))
+max_capacity= int(os.getenv("MAX_CAPACITY", 500))
+num_items= int(os.getenv("NUM_ITEMS", 30))
+num_iterations= int(os.getenv("NUM_ITERATIONS", 500))
 
 def main():
     if Path(data_file).exists():
         data = json_reader(data_file)
     else:
-        data = generate_instance(10, 50, data_file)
+        data = generate_instance(num_items, max_capacity, data_file)
         
     value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
 
@@ -28,7 +29,8 @@ def main():
         value,
         sum(item['weight'] for item in final_solution),
         data['items'],
-        data['sack_capacity']
+        data['sack_capacity'],
+        num_iterations
     )
     
     ids_no_sa = {item['id'] for item in best_solution}
@@ -39,9 +41,11 @@ def main():
     final_value_hc = calculate_value(refined_bits, data['items'])
     final_weight_hc = calculate_weight(refined_bits, data['items'])
 
-    #print("Greedy value:", value)
-    #print("Greedy items:", [item['id'] for item in final_solution])
-    #print("SA best value:", best_value)
-    #print("SA items:", [item['id'] for item in best_solution])
+    print("Greedy value:", value)
+    print("Greedy items:", [item['id'] for item in final_solution])
+    print("SA best value:", best_value)
+    print("SA items:", [item['id'] for item in best_solution])
+    print("Hillclimb final value: ", final_value_hc)
+    print("Hillclimb final weight: ", final_weight_hc)
 
 main()

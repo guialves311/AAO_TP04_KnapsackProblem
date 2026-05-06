@@ -8,7 +8,6 @@ def greedy(items, capacity):
     chosen_items=[]
     item_selected=False
     
-    print("Test")
     for item in items_sorted:
         if total_weight + item['weight'] <= capacity:
             chosen_items.append(item)
