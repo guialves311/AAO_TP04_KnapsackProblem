@@ -24,15 +24,14 @@ def relaxation_greedy(items, capacity):
 def enhanced_greedy(relaxed_items, capacity):
     capacity_left = capacity
     value = 0
+    weight = 0
     final_solution = []
     
     for item in relaxed_items:
-        if item['x'] > 0 and item['weight'] <= capacity_left:
-            item['selected'] = True
+        if item['weight'] <= capacity_left:
             capacity_left -= item['weight']
             value += item['value']
+            weight += item['weight']
             final_solution.append(item)
-        else:
-            item['selected'] = False
 
-    return final_solution, value
+    return final_solution, value, weight

@@ -1,12 +1,13 @@
-from DataGenerator import generate_instance
 from pathlib import Path
-from JSONReader import json_reader
+import os
+from dotenv import load_dotenv
 from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 from algorithms.greedy import greedy
 from algorithms.simulated_annealing import simulated_annealing
-from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weight  # Adicionado o teu import[cite: 1, 2]
-from dotenv import load_dotenv
-import os
+from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weight
+from utils.SolutionBitTranslator import solution_bit_translator
+from utils.DataGenerator import generate_instance
+from utils.JSONReader import json_reader
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
@@ -23,9 +24,19 @@ def main():
     value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
 
     ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
-    final_solution, value = enhanced_greedy(ordered_items, data['sack_capacity'])
-    best_solution, best_value = simulated_annealing(
+    final_solution, enhanced_value, enhanced_weight = enhanced_greedy(ordered_items, data['sack_capacity'])
+    
+    best_solution_enhanced, best_value_enhanced = simulated_annealing(
         final_solution,
+        enhanced_value,
+        sum(item['weight'] for item in final_solution),
+        data['items'],
+        data['sack_capacity'],
+        num_iterations
+    )
+    
+    best_solution, best_value = simulated_annealing(
+        items,
         value,
         sum(item['weight'] for item in final_solution),
         data['items'],
@@ -33,19 +44,32 @@ def main():
         num_iterations
     )
     
-    ids_no_sa = {item['id'] for item in best_solution}
-    bit_solution_input = [1 if item['id'] in ids_no_sa else 0 for item in data['items']]
     
+    bit_solution_input_enhanced = solution_bit_translator(best_solution_enhanced, data['items'])
+    refined_bits_enhanced = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input_enhanced)
+    
+    bit_solution_input = solution_bit_translator(best_solution, data['items'])
     refined_bits = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input)
+    
+    final_value_hc_enhanced = calculate_value(refined_bits_enhanced, data['items'])
+    final_weight_hc_enhanced = calculate_weight(refined_bits_enhanced, data['items'])
     
     final_value_hc = calculate_value(refined_bits, data['items'])
     final_weight_hc = calculate_weight(refined_bits, data['items'])
 
+    print("Enhanced Greedy value:", enhanced_value)
+    print("Enhanced Greedy items:", [item['id'] for item in final_solution])
+    print("Enhanced greedy weight: ", enhanced_weight)
+    print("Enhanced Greedy SA best value:", best_value_enhanced)
+    print("Enhanced Greedy SA items:", [item['id'] for item in best_solution])
+    print("Enhanced Greedy Hillclimb final value: ", final_value_hc_enhanced)
+    print("Enhanced Greedy Hillclimb final weight: ", final_weight_hc_enhanced)
+    print("------------------------------")
     print("Greedy value:", value)
-    print("Greedy items:", [item['id'] for item in final_solution])
-    print("SA best value:", best_value)
-    print("SA items:", [item['id'] for item in best_solution])
-    print("Hillclimb final value: ", final_value_hc)
-    print("Hillclimb final weight: ", final_weight_hc)
+    print("Greedy items:", [item['id'] for item in items])
+    print("Greedy SA best value:", best_value)
+    print("Greedy SA items:", [item['id'] for item in best_solution])
+    print("Greedy Hillclimb final value: ", final_value_hc)
+    print("Greedy Hillclimb final weight: ", final_weight_hc)
 
 main()

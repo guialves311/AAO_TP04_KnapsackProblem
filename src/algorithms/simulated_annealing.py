@@ -11,7 +11,7 @@ def simulated_annealing(initial_solution, initial_value, initial_weight, all_ite
     
     #SA Parameters
     temperature = int(os.getenv("TEMPERATURE", 500))
-    cooling_rate = float(os.getenv("COOLING_RATE", 500))
+    cooling_rate = float(os.getenv("COOLING_RATE", 0.99))
                
     #SA Loop            
     for _ in range(num_iterations):
