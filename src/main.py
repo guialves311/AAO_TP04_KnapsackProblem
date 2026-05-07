@@ -8,6 +8,7 @@ from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weigh
 from utils.SolutionBitTranslator import solution_bit_translator
 from utils.DataGenerator import generate_instance
 from utils.JSONReader import json_reader
+from utils.instanceReader import instance_reader
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
@@ -16,10 +17,18 @@ num_items= int(os.getenv("NUM_ITEMS", 30))
 num_iterations= int(os.getenv("NUM_ITERATIONS", 500))
 
 def main():
-    if Path(data_file).exists():
-        data = json_reader(data_file)
-    else:
-        data = generate_instance(num_items, max_capacity, data_file)
+    if not Path(data_file).exists():
+        print(f"Erro: O arquivo de instância {data_file} não foi encontrado!")
+        return
+
+    print(f"Processando instância: {data_file}")
+    
+    # LEITURA DA INSTÂNCIA NOVA
+    data = instance_reader(data_file)
+    
+    print(f"Itens carregados: {len(data['items'])}")
+    print(f"Capacidade da mochila: {data['sack_capacity']}")
+    print("------------------------------")
         
     value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
 
@@ -29,7 +38,7 @@ def main():
     best_solution_enhanced, best_value_enhanced = simulated_annealing(
         final_solution,
         enhanced_value,
-        sum(item['weight'] for item in final_solution),
+        enhanced_weight,
         data['items'],
         data['sack_capacity'],
         num_iterations
@@ -38,7 +47,7 @@ def main():
     best_solution, best_value = simulated_annealing(
         items,
         value,
-        sum(item['weight'] for item in final_solution),
+        weight,
         data['items'],
         data['sack_capacity'],
         num_iterations
