@@ -8,6 +8,8 @@ from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weigh
 from utils.SolutionBitTranslator import solution_bit_translator
 from utils.DataGenerator import generate_instance
 from utils.JSONReader import json_reader
+from utils.JSONtoArrays import json_to_arrays
+from algorithms.genetic_algorithm import run_hybrid_ga
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
@@ -21,7 +23,9 @@ def main():
     else:
         data = generate_instance(num_items, max_capacity, data_file)
         
-    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
+    data_values, data_weights, data_ids = json_to_arrays(data)
+        
+    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])
 
     ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
     final_solution, enhanced_value, enhanced_weight = enhanced_greedy(ordered_items, data['sack_capacity'])
@@ -44,12 +48,13 @@ def main():
         num_iterations
     )
     
-    
     bit_solution_input_enhanced = solution_bit_translator(best_solution_enhanced, data['items'])
     refined_bits_enhanced = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input_enhanced)
     
     bit_solution_input = solution_bit_translator(best_solution, data['items'])
     refined_bits = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input)
+    
+    testGA = run_hybrid_ga(data_values, data_weights, max_capacity, bit_solution_input)
     
     final_value_hc_enhanced = calculate_value(refined_bits_enhanced, data['items'])
     final_weight_hc_enhanced = calculate_weight(refined_bits_enhanced, data['items'])
@@ -71,5 +76,6 @@ def main():
     print("Greedy SA items:", [item['id'] for item in best_solution])
     print("Greedy Hillclimb final value: ", final_value_hc)
     print("Greedy Hillclimb final weight: ", final_weight_hc)
+    print("Test GA: ", testGA)
 
 main()
