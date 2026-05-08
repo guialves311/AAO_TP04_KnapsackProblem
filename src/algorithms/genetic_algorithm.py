@@ -1,5 +1,6 @@
 import random
 import os
+import matplotlib.pyplot as plt
 
 MUTATION_RATE = float(os.getenv("MUTATION_RATE", 0.1))
 
@@ -112,50 +113,73 @@ def attribute_reduction_step(population, profits, weights, capacity):
     return refined_population
 
 def run_hybrid_ga(profits, weights, capacity, pop_size=10, gen_limit=30, initial_solution=None):
-    """
-    Executa o GA Híbrido usando os dados extraídos do JSON.
-    """
     num_items = len(profits)
     population = []
+    history = []
     
-    
-    # Inserção da Solução Inicial (se fornecida)
     if initial_solution:
-        # Garante que a solução tem o tamanho correto
         if len(initial_solution) == num_items:
             population.append(list(initial_solution))
     
-    # Preenche o restante da população aleatoriamente [cite: 102]
     while len(population) < pop_size:
         population.append([random.randint(0, 1) for _ in range(num_items)])
 
     for _ in range(gen_limit):
-        # 2. Avaliação da Fitness com parâmetros dinâmicos [cite: 115]
+        # 1. Avaliação
         fitnesses = [calculate_fitness(ind, profits, weights, capacity) for ind in population]
         
+        # --- INÍCIO DA ALTERAÇÃO (ELITISMO) ---
+        # Encontramos o melhor da geração ATUAL para protegê-lo
+        max_fit = max(fitnesses)
+        history.append(max_fit)
+        
+        best_idx = fitnesses.index(max_fit)
+        elite = list(population[best_idx]) # Salvamos uma cópia do "Rei"
+        # --- FIM DA ALTERAÇÃO ---
+
         new_population = []
-        # 3, 4, 5. Seleção, Crossover e Mutação [cite: 116-118]
-        while len(new_population) < pop_size:
-            # Reutiliza as funções de seleção/crossover do código anterior
+        
+        # Criamos a nova geração, mas deixamos 1 vaga livre para o elite
+        while len(new_population) < (pop_size - 1): 
             p1, p2 = select_parents(population, fitnesses) 
             c1, c2 = crossover(p1, p2)
+            
+            # Mutamos os filhos normalmente
             new_population.append(mutate(c1))
-            if len(new_population) < pop_size:
+            if len(new_population) < (pop_size - 1):
                 new_population.append(mutate(c2))
         
-        # 6. Passo Híbrido: Técnica de redução de atributos [cite: 121, 126]
+        # 6. Passo Híbrido (RST) processa os novos indivíduos
+        # Note que passamos a 'new_population' que tem (pop_size - 1) elementos
         population = attribute_reduction_step(new_population, profits, weights, capacity)
         
-    # Retorna o melhor indivíduo da última geração
+        # --- REINSERÇÃO DO ELITE ---
+        # Agora o elite volta para a população sem ter sofrido mutação ou RST
+        population.append(elite)
+        # ---------------------------
+        
+    # Resto do código permanece igual...
     final_fitnesses = [calculate_fitness(ind, profits, weights, capacity) for ind in population]
     best_idx = final_fitnesses.index(max(final_fitnesses))
     best_chromosome = population[best_idx]
     
-    # Extrai o lucro e peso final [cite: 18, 76]
     profit, weight = get_solution_details(best_chromosome, profits, weights)
     
     return {
         "best_solution": best_chromosome,
         "total_profit": profit,
-        "total_weight": weight
+        "total_weight": weight,
+        "history": history
     }
+    
+def plot_evolution(history, greedy_value):
+    plt.figure(figsize=(10, 5))
+    plt.plot(history, label='Evolução do GA Híbrido', color='blue', linewidth=2)
+    plt.axhline(y=greedy_value, color='red', linestyle='--', label='Resultado do Greedy')
+    
+    plt.title('Evolução do Lucro por Geração')
+    plt.xlabel('Geração')
+    plt.ylabel('Lucro (Fitness)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()

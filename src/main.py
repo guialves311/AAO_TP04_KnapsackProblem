@@ -10,11 +10,12 @@ from utils.DataGenerator import generate_instance
 from utils.JSONReader import json_reader
 from utils.JSONtoArrays import json_to_arrays
 from algorithms.genetic_algorithm import run_hybrid_ga
+from algorithms.genetic_algorithm import plot_evolution
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
-max_capacity= int(os.getenv("MAX_CAPACITY", 5000))
-num_items= int(os.getenv("NUM_ITEMS", 100))
+max_capacity= int(os.getenv("MAX_CAPACITY", 500))
+num_items= int(os.getenv("NUM_ITEMS", 30))
 num_iterations= int(os.getenv("NUM_ITERATIONS", 500))
 
 def main():
@@ -55,6 +56,7 @@ def main():
     refined_bits = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input)
     
     testGA = run_hybrid_ga(data_values, data_weights, max_capacity, 200, 200, bit_solution_input)
+    plot_evolution(testGA['history'], value)
     
     final_value_hc_enhanced = calculate_value(refined_bits_enhanced, data['items'])
     final_weight_hc_enhanced = calculate_weight(refined_bits_enhanced, data['items'])
