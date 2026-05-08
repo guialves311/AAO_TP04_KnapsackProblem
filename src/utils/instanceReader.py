@@ -1,33 +1,34 @@
 def instance_reader(file_path):
     items = []
+    capacity = 0
     
     with open(file_path, 'r') as f:
-        lines = [line.strip() for line in f if line.strip() and not line.strip().startswith("[")]
-
-    if not lines:
-        return {"sack_capacity": 0, "items": []}
-
-    # 1. LER O NÚMERO DE ITENS (Sempre a primeira linha útil)
-    try:
-        num_items_header = int(lines[0])
-    except ValueError:
-        num_items_header = 0
-
-    # 2. LER A CAPACIDADE (Sempre a última linha útil)
-    try:
-        capacity = int(lines[-1])
-    except ValueError:
-        capacity = 0
-
-    # 3. LER OS ITENS
+        lines = f.readlines()
+        
     for line in lines:
+        line = line.strip()
+        
+        # 1. Ignora linhas vazias ou que indicam a fonte (ex: )
+        if not line or line.startswith("["):
+            continue
+        
+        # 2. Divide a linha por espaços
         parts = line.split()
+        
+        # 3. Se a linha tiver 3 colunas, é um ITEM (ID, Valor, Peso)
         if len(parts) == 3:
             items.append({
                 "id": int(parts[0]),
                 "value": int(parts[1]),
                 "weight": int(parts[2])
             })
+        
+        # 4. Se a linha tiver apenas 1 número e for muito grande, é a CAPACIDADE
+        # (Nas instâncias da prof, a capacidade é 10000000000)
+        elif len(parts) == 1:
+            val = int(parts[0])
+            if val > 1000: # Diferencia o N total (1000) da Capacidade (10^10)
+                capacity = val
             
     return {
         "sack_capacity": capacity,

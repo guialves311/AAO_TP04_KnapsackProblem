@@ -6,15 +6,11 @@ from algorithms.greedy import greedy
 from algorithms.simulated_annealing import simulated_annealing
 from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weight
 from utils.SolutionBitTranslator import solution_bit_translator
-from utils.DataGenerator import generate_instance
-from utils.JSONReader import json_reader
 from utils.instanceReader import instance_reader
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
-max_capacity= int(os.getenv("MAX_CAPACITY", 500))
-num_items= int(os.getenv("NUM_ITEMS", 30))
-num_iterations= int(os.getenv("NUM_ITERATIONS", 500))
+num_iterations= int(os.getenv("NUM_ITERATIONS"))
 
 def main():
     if not Path(data_file).exists():
