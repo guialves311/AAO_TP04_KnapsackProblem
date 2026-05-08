@@ -15,40 +15,18 @@ def get_solution_details(chromosome, profits, weights):
             total_weight += weights[i]
     return total_profit, total_weight
 
-def get_greedy_solution(profits, weights, capacity):
-    # Calcula a razão lucro/peso para cada item
-    ratios = []
-    for i in range(len(profits)):
-        ratios.append((profits[i] / weights[i], i))
-    
-    # Ordena os itens pela razão (do maior para o menor)
-    ratios.sort(key=lambda x: x[0], reverse=True)
-    
-    greedy_chromosome = [0] * len(profits)
-    current_weight = 0
-    
-    for ratio, i in ratios:
-        if current_weight + weights[i] <= capacity:
-            greedy_chromosome[i] = 1
-            current_weight += weights[i]
-            
-    return greedy_chromosome
 
 def calculate_fitness(chromosome, profits, weights, capacity):
-    """
-    Calcula a aptidão usando os parâmetros fornecidos. 
-    A aptidão é o lucro total se o peso total <= capacidade[cite: 76, 150].
-    """
-    total_weight = 0
-    total_profit = 0
-    for i in range(len(chromosome)):
-        if chromosome[i] == 1:
-            total_weight += weights[i]
-            total_profit += profits[i]
+    total_weight = sum(w for i, w in enumerate(weights) if chromosome[i] == 1)
+    total_profit = sum(p for i, p in enumerate(profits) if chromosome[i] == 1)
     
     if total_weight <= capacity:
         return total_profit
-    return 0
+    else:
+        # Penaliza proporcionalmente ao excesso. 
+        # O '10' é um fator de multa; ajuste se necessário.
+        penalty = (total_weight - capacity) * 10 
+        return max(0, total_profit - penalty)
 
 def select_parents(population, fitnesses):
     """Seleção por Roleta (Roulette-wheel selection)[cite: 87]."""
@@ -81,15 +59,57 @@ def mutate(chromosome):
             chromosome[i] = 1 if chromosome[i] == 0 else 0
     return chromosome
 
-def attribute_reduction_step(population):
+def calculate_attribute_importance(population, fitnesses):
     """
-    Representação simplificada da técnica de redução de atributos[cite: 121, 215].
-    O documento usa Rough Set Theory para identificar genes importantes (ex: C1 e C3).
-    Aqui, simulamos a priorização de genes com maior importância calculada.
+    Calcula a importância de cada gene usando uma lógica baseada em RST.
+    Discretizamos o fitness em 'Bom' (1) ou 'Ruim' (0).
     """
-    # Na prática, o código de Rough Set calcularia a importância (w) de cada gene.
-    # Fontes [154, 168, 183, 212] mostram cálculos de importância para C1, C2, C3, C4.
-    return population # Retorna a população refinada
+    if not fitnesses or sum(fitnesses) == 0:
+        return [0] * len(population[0])
+
+    num_items = len(population[0])
+    avg_fitness = sum(fitnesses) / len(fitnesses)
+    
+    # Decisão: 1 se fitness > média, senão 0
+    decisions = [1 if f >= avg_fitness else 0 for f in fitnesses]
+    
+    importance_scores = []
+    
+    for i in range(num_items):
+        # Calculamos a dependência: quantas vezes o valor do gene (0 ou 1)
+        # coincide com a decisão de 'Bom lucro' (1)
+        matches = 0
+        for j in range(len(population)):
+            if population[j][i] == decisions[j]:
+                matches += 1
+        
+        importance = matches / len(population)
+        importance_scores.append(importance)
+        
+    return importance_scores
+
+def attribute_reduction_step(population, profits, weights, capacity):
+    # 1. Identifica a importância (como fizemos antes)
+    fitnesses = [sum(p for i, p in enumerate(profits) if ind[i] == 1) for ind in population]
+    importances = calculate_attribute_importance(population, fitnesses)
+    
+    refined_population = []
+    for chromo in population:
+        temp_ind = list(chromo)
+        
+        # REPARO ATIVO: Enquanto estiver acima do peso...
+        while sum(weights[i] for i, gene in enumerate(temp_ind) if gene == 1) > capacity:
+            # Encontra os genes ativos (1)
+            active_genes = [i for i, gene in enumerate(temp_ind) if gene == 1]
+            if not active_genes: break
+            
+            # DESLIGA o gene que tem a MENOR importância segundo a RST
+            # Isso é o GA "aprendendo" a tirar o lixo para caber o que importa
+            least_important = min(active_genes, key=lambda x: importances[x])
+            temp_ind[least_important] = 0
+            
+        refined_population.append(temp_ind)
+    return refined_population
 
 def run_hybrid_ga(profits, weights, capacity, pop_size=10, gen_limit=30, initial_solution=None):
     """
@@ -97,6 +117,7 @@ def run_hybrid_ga(profits, weights, capacity, pop_size=10, gen_limit=30, initial
     """
     num_items = len(profits)
     population = []
+    
     
     # Inserção da Solução Inicial (se fornecida)
     if initial_solution:
@@ -107,8 +128,8 @@ def run_hybrid_ga(profits, weights, capacity, pop_size=10, gen_limit=30, initial
     # Preenche o restante da população aleatoriamente [cite: 102]
     while len(population) < pop_size:
         population.append([random.randint(0, 1) for _ in range(num_items)])
-    
-    for generation in range(gen_limit):
+
+    for _ in range(gen_limit):
         # 2. Avaliação da Fitness com parâmetros dinâmicos [cite: 115]
         fitnesses = [calculate_fitness(ind, profits, weights, capacity) for ind in population]
         
@@ -123,7 +144,7 @@ def run_hybrid_ga(profits, weights, capacity, pop_size=10, gen_limit=30, initial
                 new_population.append(mutate(c2))
         
         # 6. Passo Híbrido: Técnica de redução de atributos [cite: 121, 126]
-        population = attribute_reduction_step(new_population)
+        population = attribute_reduction_step(new_population, profits, weights, capacity)
         
     # Retorna o melhor indivíduo da última geração
     final_fitnesses = [calculate_fitness(ind, profits, weights, capacity) for ind in population]

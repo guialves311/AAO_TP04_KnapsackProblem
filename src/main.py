@@ -13,8 +13,8 @@ from algorithms.genetic_algorithm import run_hybrid_ga
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
-max_capacity= int(os.getenv("MAX_CAPACITY", 500))
-num_items= int(os.getenv("NUM_ITEMS", 30))
+max_capacity= int(os.getenv("MAX_CAPACITY", 5000))
+num_items= int(os.getenv("NUM_ITEMS", 100))
 num_iterations= int(os.getenv("NUM_ITERATIONS", 500))
 
 def main():
@@ -54,7 +54,7 @@ def main():
     bit_solution_input = solution_bit_translator(best_solution, data['items'])
     refined_bits = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input)
     
-    testGA = run_hybrid_ga(data_values, data_weights, max_capacity, bit_solution_input)
+    testGA = run_hybrid_ga(data_values, data_weights, max_capacity, 200, 200, bit_solution_input)
     
     final_value_hc_enhanced = calculate_value(refined_bits_enhanced, data['items'])
     final_weight_hc_enhanced = calculate_weight(refined_bits_enhanced, data['items'])
