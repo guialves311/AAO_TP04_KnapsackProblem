@@ -38,7 +38,7 @@ def main():
     best_solution_enhanced, best_value_enhanced = simulated_annealing(
         final_solution,
         enhanced_value,
-        enhanced_weight,
+        sum(item['weight'] for item in final_solution),
         data['items'],
         data['sack_capacity'],
         num_iterations
@@ -47,7 +47,7 @@ def main():
     best_solution, best_value = simulated_annealing(
         items,
         value,
-        weight,
+        sum(item['weight'] for item in items),
         data['items'],
         data['sack_capacity'],
         num_iterations
