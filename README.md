@@ -9,6 +9,7 @@ After setting up the environment, you'll need to activate it, with the following
 - `.\.venv\Scripts\Activate.ps1`: On PowerShell terminal (Windows)
 - `.\.venv\Scripts\activate.bat`: On CMD terminal (Windows) - Be careful to have the correct folder open on terminal before running command
 - `source .venv/bin/activate`: On bash / zsh terminal (Linux / macOS)
+* Incase your OS don't allow it to activate, run `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser` (Windows only)
 
 To help with code setup and running, if you don't have any Python extensions installed, here's a list of the extensions installed that were utilized for this project: (Name - Owner)
 
