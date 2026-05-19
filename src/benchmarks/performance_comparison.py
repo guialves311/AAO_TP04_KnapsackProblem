@@ -9,54 +9,42 @@ from algorithms.simulated_annealing import simulated_annealing
 
 import time
 
-def algorithm_time(algorithm_function, problem, num_execucoes=5, **kwargs):
-    """
-    Corre qualquer algoritmo N vezes e devolve a lista de tempos e de valores.
+def algorithm_time(algorithm_function, problem, num_runs=5, **kwargs):
+    # Runs the given algorithm multiple times and returns a list of execution times and results.
+    times = []
+    results = []
     
-    :param algorithm_function: A função do algoritmo (ex: greedy, simulated_annealing)
-    :param problem: O objeto KnapsackProblem com os dados da instância
-    :param num_execucoes: Número de vezes que o teste vai ser repetido
-    :param kwargs: Argumentos extra dinâmicos (ex: initial_bits, initial_solution, tabu_size)
-    """
-    tempos = []
-    valores = []
-    
-    for _ in range(num_execucoes):
-        # Medição isolada de tempo
-        start = time.perf_counter()
+    for _ in range(num_runs):
+        start_time = time.perf_counter()
         
-        # O '**kwargs' desempacota automaticamente os argumentos extras que passares.
-        # Se passares 'initial_solution=sol', ele executa: algorithm_function(problem, initial_solution=sol)
-        # Se não passares nada, executa apenas: algorithm_function(problem)
-        solucao, valor = algorithm_function(problem, **kwargs)
+        #Unpack the solution and value from the algorithm function
+        solucao, value = algorithm_function(problem, **kwargs)
         
-        end = time.perf_counter()
+        end_time = time.perf_counter()
         
-        tempos.append(end - start)
-        valores.append(valor)
+        times.append(end_time - start_time)
+        results.append(value)
         
-    return tempos, valores
+    return times, results
 
-def correr_benchmark_completo(nome_instancia, dados_instancia):
-    # Ficheiro único para guardar tudo ordenado
+def correr_benchmark_completo(instance_name, problem_instance):
+    # Runs all algorithms on the instance and saves results to CSV
     with open('results/benchmark_geral.csv', mode='a', newline='') as f:
         writer = csv.writer(f)
         
-        # --- 1. GREEDY (5 vezes e tiramos a média direto) ---
-        tempos_g, valores_g = medir_algoritmo(greedy_knapsack, dados_instancia, num_execucoes=5)
-        tempo_medio_g = np.mean(tempos_g)
-        valor_g = valores_g[0] # É sempre igual
+        # 1. GREEDY (5 runs, average time)
+        times_greedy, values_greedy = algorithm_time(greedy, problem_instance, num_runs=5)
+        avg_time_greedy = np.mean(times_greedy)
+        value_greedy = values_greedy[0] # É sempre igual
         
-        # Guardamos apenas uma linha para o Greedy (já com o tempo médio)
-        writer.writerow([nome_instancia, "Greedy", "-", valor_g, tempo_medio_g])
+        writer.writerow([instance_name, "Greedy", "-", value_greedy, avg_time_greedy])
         
-        # --- 2. SIMULATED ANNEALING (Registar todas as corridas) ---
-        # Corremos mais vezes (ex: 10) porque o resultado varia com a seed
-        tempos_sa, valores_sa = medir_algoritmo(simulated_annealing, dados_instancia, num_execucoes=10)
+        # 2. SIMULATED ANNEALING (10 runs, record all) 
+        times_sa, values_sa = algorithm_time(simulated_annealing, problem_instance, num_runs=10)
         
-        for idx, (t, v) in enumerate(zip(tempos_sa, valores_sa)):
-            writer.writerow([nome_instancia, "Simulated Annealing", f"Run_{idx}", v, t])
+        for idx, (t, v) in enumerate(zip(times_sa, values_sa)):
+            writer.writerow([instance_name, "Simulated Annealing", f"Run_{idx}", v, t])
             
-        # --- 3. HILL CLIMB (Igual ao SA) ---
-        # tempos_hc, valores_hc = medir_algoritmo(hill_climb, dados_instancia, num_execucoes=10)
+        # 3. HILL CLIMB
+        # times_hc, results_hc = algorithm_time(hill_climb, problem_instance, num_runs=10)
         # ... (guardar no CSV)
