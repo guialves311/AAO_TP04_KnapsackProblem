@@ -4,9 +4,8 @@ from dotenv import load_dotenv
 from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 from algorithms.greedy import greedy
 from algorithms.simulated_annealing import simulated_annealing
-from algorithms.hillclimb import hill_climbing, calculate_value, calculate_weight
+from algorithms.hillclimb import hill_climbing
 from algorithms.tabu_search import tabu_search
-from utils.SolutionBitTranslator import solution_bit_translator
 from utils.instanceReader import instance_reader
 
 load_dotenv()
@@ -20,82 +19,79 @@ def main():
 
     print(f"Instância: {data_file}")
     
-    # LEITURA DA INSTÂNCIA NOVA
-    data = instance_reader(data_file)
+    # 1. LEITURA DA INSTÂNCIA (Agora retorna o Objeto KnapsackProblem)
+    problem = instance_reader(data_file)
     
-    print(f"Numeros Itens: {len(data['items'])}")
-    print(f"Capacidade da mochila: {data['sack_capacity']}")
+    print(f"Numeros Itens: {problem.num_items}")
+    print(f"Capacidade da mochila: {problem.capacity}")
     print("------------------------------")
         
-    value, items, weight, selected_item = greedy(data['items'], data['sack_capacity'])  
+    # 2. EXECUÇÃO DOS ALGORITMOS BASE (Retornam listas de bits [1, 0, 1...])
+    greedy_bits, greedy_value = greedy(problem)  
 
-    ordered_items, relaxed_value = relaxation_greedy(data['items'], data['sack_capacity'])
-    final_solution, enhanced_value, enhanced_weight = enhanced_greedy(ordered_items, data['sack_capacity'])
+    x_fractions, relaxed_value = relaxation_greedy(problem)
+    enhanced_bits, enhanced_value, enhanced_weight = enhanced_greedy(problem, x_fractions)
     
-    best_solution_enhanced, best_value_enhanced = simulated_annealing(
-        final_solution,
-        enhanced_value,
-        sum(item['weight'] for item in final_solution),
-        data['items'],
-        data['sack_capacity'],
+    # =========================================================================
+    # FLUXO 1: A partir do Enhanced Greedy
+    # =========================================================================
+    # Simulated Annealing
+    sa_bits_enhanced, sa_value_enhanced = simulated_annealing(
+        problem,
+        enhanced_bits,
         num_iterations
     )
     
-    best_solution, best_value = simulated_annealing(
-        items,
-        value,
-        sum(item['weight'] for item in items),
-        data['items'],
-        data['sack_capacity'],
+    # Tabu Search (Atualizada para usar objetos e bits!)
+    tabu_bits_enhanced, tabu_value_enhanced = tabu_search(
+        problem,
+        enhanced_bits,
+        num_iterations,
+        10
+    )
+    
+    # Hill Climbing refinando o resultado do Simulated Annealing
+    hc_bits_enhanced = hill_climbing(problem, sa_bits_enhanced)
+    final_value_hc_enhanced = problem.calculate_value(hc_bits_enhanced)
+    final_weight_hc_enhanced = problem.calculate_weight(hc_bits_enhanced)
+    
+    # =========================================================================
+    # FLUXO 2: A partir do Greedy Padrão
+    # =========================================================================
+    # Simulated Annealing
+    sa_bits, sa_value = simulated_annealing(
+        problem,
+        greedy_bits,
         num_iterations
     )
     
-    best_solution_tabu, best_value_tabu = tabu_search(
-        items,
-        data['items'],
-        data['sack_capacity'],
+    # Tabu Search (Atualizada para usar objetos e bits!)
+    tabu_bits, tabu_value = tabu_search(
+        problem,
+        greedy_bits,
         num_iterations,
-        tabu_size=10
+        10
     )
     
-    best_solution_tabu_enhanced, best_value_tabu_enhanced = tabu_search(
-        final_solution,
-        data['items'],
-        data['sack_capacity'],
-        num_iterations,
-        tabu_size=10
-    )
-    
-    
-    bit_solution_input_enhanced = solution_bit_translator(best_solution_enhanced, data['items'])
-    refined_bits_enhanced = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input_enhanced)
-    
-    bit_solution_input = solution_bit_translator(best_solution, data['items'])
-    refined_bits = hill_climbing(data['items'], data['sack_capacity'], bit_solution_input)
-    
-    final_value_hc_enhanced = calculate_value(refined_bits_enhanced, data['items'])
-    final_weight_hc_enhanced = calculate_weight(refined_bits_enhanced, data['items'])
-    
-    final_value_hc = calculate_value(refined_bits, data['items'])
-    final_weight_hc = calculate_weight(refined_bits, data['items'])
+    # Hill Climbing refinando o resultado do Simulated Annealing
+    hc_bits = hill_climbing(problem, sa_bits)
+    final_value_hc = problem.calculate_value(hc_bits)
+    final_weight_hc = problem.calculate_weight(hc_bits)
 
+    # =========================================================================
+    # PRINTS DOS RESULTADOS
+    # =========================================================================
     print("Enhanced Greedy value:", enhanced_value)
-    #print("Enhanced Greedy items:", [item['id'] for item in final_solution])
     print("Enhanced greedy weight: ", enhanced_weight)
-    print("Enhanced Greedy SA best value:", best_value_enhanced)
-    #print("Enhanced Greedy SA items:", [item['id'] for item in best_solution])
+    print("Enhanced Greedy SA best value:", sa_value_enhanced)
     print("Enhanced Greedy Hillclimb final value: ", final_value_hc_enhanced)
     print("Enhanced Greedy Hillclimb final weight: ", final_weight_hc_enhanced)
-    print("Ehanced Greedy Tabu Search best value:", best_value_tabu_enhanced)
-    #print("Enhanced Greedy Tabu items:", [item['id'] for item in best_solution_tabu])
+    print("Enhanced Greedy Tabu Search best value:", tabu_value_enhanced)
     print("------------------------------")
-    print("Greedy value:", value)
-    #print("Greedy items:", [item['id'] for item in items])
-    print("Greedy SA best value:", best_value)
-    #print("Greedy SA items:", [item['id'] for item in best_solution])
+    print("Greedy value:", greedy_value)
+    print("Greedy SA best value:", sa_value)
     print("Greedy Hillclimb final value: ", final_value_hc)
     print("Greedy Hillclimb final weight: ", final_weight_hc)
-    print("Greedy Tabu Search best value:", best_value_tabu)
-    #print("Greedy Tabu items:", [item['id'] for item in best_solution_tabu])
+    print("Greedy Tabu Search best value:", tabu_value)
 
 main()

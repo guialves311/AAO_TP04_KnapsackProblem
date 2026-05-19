@@ -2,42 +2,52 @@ import math
 import random
 import os
 
-def simulated_annealing(initial_solution, initial_value, initial_weight, all_items, max_capacity, num_iterations):
-    current_solution = initial_solution
-    current_value = initial_value
-    current_weight = initial_weight
-    best_solution = list(current_solution)
-    best_value = current_value
-    
-    #SA Parameters
-    temperature = int(os.getenv("TEMPERATURE", 1000000000))
-    cooling_rate = float(os.getenv("COOLING_RATE", 0.999))
-               
-    #SA Loop            
-    for _ in range(num_iterations):
-        #Create neighbor solution
-        neighbor_solution = list(current_solution)
-    
-        item_to_remove = random.choice(neighbor_solution)
-        item_to_add = random.choice([item for item in all_items if item not in neighbor_solution])
-            
-        neighbor_solution.remove(item_to_remove)
-        neighbor_solution.append(item_to_add)
-                
-        neighbor_value = sum(item['value'] for item in neighbor_solution) 
-        neighbor_weight = sum(item['weight'] for item in neighbor_solution)    
+def simulated_annealing(problem, initial_bits, num_iterations):
+    temperature = float(os.getenv("TEMPERATURE", 100000.0))
+    cooling_rate = float(os.getenv("COOLING_RATE", 0.995))
         
-        #Accept or reject neighbor solution
-        if neighbor_weight <= max_capacity:
+    current_bits = list(initial_bits)
+    current_value = problem.calculate_value(current_bits)
+    current_weight = problem.calculate_weight(current_bits)
+    
+    best_bits = list(current_bits)
+    best_value = current_value
+
+    for _ in range(num_iterations):
+        itens_dentro = [i for i, bit in enumerate(current_bits) if bit == 1]
+        itens_fora = [i for i, bit in enumerate(current_bits) if bit == 0]
+
+        if not itens_dentro or not itens_fora:
+            continue
+            
+        idx_remover = random.choice(itens_dentro)
+        idx_adicionar = random.choice(itens_fora)
+        
+        neighbor_weight = current_weight - problem.weights[idx_remover] + problem.weights[idx_adicionar]
+        neighbor_value = current_value - problem.values[idx_remover] + problem.values[idx_adicionar]
+        
+        if neighbor_weight <= problem.capacity:
             delta = neighbor_value - current_value
-            probability = math.exp(delta / temperature)    
-            if delta > 0 or random.random() < probability:
-                current_solution = list(neighbor_solution)
+            
+            if delta > 0:
+                aceitar = True
+            else:
+                if temperature > 0:
+                    probability = math.exp(delta / temperature)
+                    aceitar = random.random() < probability
+                else:
+                    aceitar = False
+            
+            if aceitar:
+                current_bits[idx_remover] = 0
+                current_bits[idx_adicionar] = 1
                 current_value = neighbor_value
                 current_weight = neighbor_weight
+                
                 if current_value > best_value:
-                    best_solution = list(current_solution)
+                    best_bits = list(current_bits)
                     best_value = current_value
+                    
         temperature *= cooling_rate
         
-    return best_solution, best_value
+    return best_bits, best_value

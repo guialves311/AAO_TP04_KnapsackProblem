@@ -1,37 +1,41 @@
-# The relaxation with improved greedy algorithm approach to the knapsack problem
-
-def relaxation_greedy(items, capacity):
-    for item in items:
-        item['density'] = item['value'] / item['weight']
+def relaxation_greedy(problem):
+    indices_sorted = sorted(range(problem.num_items), 
+                            key=lambda i: problem.values[i] / problem.weights[i], 
+                            reverse=True)
     
-    ordered_items = sorted(items, key=lambda x: x['density'], reverse = True)
+    capacity_left = problem.capacity
+    total_relaxed_value = 0.0
+    x = [0.0] * problem.num_items
     
-    capacity_left = capacity
-    total_relaxed_value = 0
-    
-    for item in ordered_items:
-        if item['weight'] <= capacity_left:
-            item['x'] = 1.0
-            capacity_left -= item['weight']
-            total_relaxed_value += item['value']
+    for i in indices_sorted:
+        if problem.weights[i] <= capacity_left:
+            x[i] = 1.0
+            capacity_left -= problem.weights[i]
+            total_relaxed_value += problem.values[i]
         else:
-            item['x'] = capacity_left / item['weight']
-            total_relaxed_value += item['value'] * item['x']
+            x[i] = capacity_left / problem.weights[i]
+            total_relaxed_value += problem.values[i] * x[i]
             capacity_left = 0
-            
-    return ordered_items, total_relaxed_value
+            break
+        
+    return x, total_relaxed_value
 
-def enhanced_greedy(relaxed_items, capacity):
-    capacity_left = capacity
-    value = 0
-    weight = 0
-    final_solution = []
+
+def enhanced_greedy(problem, x_fractions):
+    indices_sorted = sorted(range(problem.num_items), 
+                            key=lambda i: problem.values[i] / problem.weights[i], 
+                            reverse=True)
     
-    for item in relaxed_items:
-        if item['weight'] <= capacity_left:
-            capacity_left -= item['weight']
-            value += item['value']
-            weight += item['weight']
-            final_solution.append(item)
-
-    return final_solution, value, weight
+    capacity_left = problem.capacity
+    total_value = 0
+    total_weight = 0
+    solution_bits = [0] * problem.num_items
+    
+    for i in indices_sorted:
+        if x_fractions[i] > 0.0 and problem.weights[i] <= capacity_left:
+            solution_bits[i] = 1
+            capacity_left -= problem.weights[i]
+            total_value += problem.values[i]
+            total_weight += problem.weights[i]
+            
+    return solution_bits, total_value, total_weight

@@ -1,18 +1,18 @@
-# The greedy approach to the knapsack problem
+from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def greedy(items, capacity):
-    items_sorted = sorted(items, key=lambda x: x['value'] / x['weight'], reverse=True)
+def greedy(problem: KnapsackProblem):
+    indices_sorted = sorted(range(problem.num_items), 
+                            key=lambda i: problem.values[i] / problem.weights[i], 
+                            reverse=True)
     
-    total_value=0
-    total_weight=0
-    chosen_items=[]
-    item_selected=False
+    total_value = 0
+    total_weight = 0
+    solution_bits = [0] * problem.num_items 
     
-    for item in items_sorted:
-        if total_weight + item['weight'] <= capacity:
-            chosen_items.append(item)
-            total_value += item['value']
-            total_weight += item['weight']
-            item_selected=True
+    for i in indices_sorted:
+        if total_weight + problem.weights[i] <= problem.capacity:
+            solution_bits[i] = 1
+            total_value += problem.values[i]
+            total_weight += problem.weights[i]
         
-    return total_value, chosen_items, total_weight, item_selected
+    return solution_bits, total_value

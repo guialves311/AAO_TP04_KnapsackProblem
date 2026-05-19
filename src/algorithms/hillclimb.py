@@ -1,25 +1,18 @@
-def calculate_value(solution_bits, all_items):
-    return sum(item['value'] for i, item in enumerate(all_items) if solution_bits[i] == 1)
-
-def calculate_weight(solution_bits, all_items):
-    return sum(item['weight'] for i, item in enumerate(all_items) if solution_bits[i] == 1)
-
-def hill_climbing(all_items, capacity, initial_bits):
+def hill_climbing(problem, initial_bits):
     current_bits = list(initial_bits)
-    current_value = calculate_value(current_bits, all_items)
+    current_value = problem.calculate_value(current_bits)
     
     improved = True
     while improved:
         improved = False
-        
-        for i in range(len(all_items)):
+        for i in range(problem.num_items):
             neighbor = list(current_bits)
             neighbor[i] = 1 - neighbor[i]
             
-            val = calculate_value(neighbor, all_items)
-            weight = calculate_weight(neighbor, all_items)
+            val = problem.calculate_value(neighbor)
+            weight = problem.calculate_weight(neighbor)
             
-            if weight <= capacity and val > current_value:
+            if weight <= problem.capacity and val > current_value:
                 current_bits = neighbor
                 current_value = val
                 improved = True
