@@ -14,7 +14,7 @@ def algorithm_time(algorithm_function, problem, num_runs=1, **kwargs):
     weights = []
     for _ in range(num_runs):
         start_time = time.perf_counter()
-        solucao, value, weight = algorithm_function(problem, **kwargs)
+        solution, value, weight = algorithm_function(problem, **kwargs)
         end_time = time.perf_counter()
         
         times.append(end_time - start_time)
@@ -22,13 +22,13 @@ def algorithm_time(algorithm_function, problem, num_runs=1, **kwargs):
         weights.append(weight)
     return times, results, weights
 
-def correr_benchmark_completo(instance_name, problem_instance, num_iterations=1000):
+def run_benchmarks(instance_name, problem_instance, num_iterations=1000):
     print("\n" + "="*80)
     print(f" EXECUÇÃO DE BENCHMARK: {instance_name}")
     print(f" NÚMERO DE ITENS: {problem_instance.num_items} | CAPACIDADE: {problem_instance.capacity}")
     print("="*80)
     
-    # Criamos o cabeçalho da nossa tabela de texto
+    # Table results header 
     print(f"{'Algoritmo':<25} | {'Origem':<18} | {'Nº De Voltas':<15} | {'Melhor Valor':<15} | {'Valor Médio':<15} | {'Tempo Médio (s)':<15}")
     print("-"*80)
 
@@ -50,7 +50,7 @@ def correr_benchmark_completo(instance_name, problem_instance, num_iterations=10
     print("-"*80)
 
     # =========================================================================
-    # 2. META-HEURÍSTICAS (Origem: Greedy Normal)
+    # 2. Algorithms with origem in Greedy Normal
     # =========================================================================
     
     # --- Simulated Annealing ---
@@ -68,7 +68,7 @@ def correr_benchmark_completo(instance_name, problem_instance, num_iterations=10
     print("-"*80)
 
     # =========================================================================
-    # 3. META-HEURÍSTICAS (Origem: Enhanced Greedy)
+    # 3. Algorithms with origem in Enhanced Greedy
     # =========================================================================
     
     # --- Simulated Annealing ---

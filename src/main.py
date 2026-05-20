@@ -7,7 +7,7 @@ from algorithms.simulated_annealing import simulated_annealing
 from algorithms.hillclimb import hill_climbing
 from algorithms.tabu_search import tabu_search
 from utils.instanceReader import instance_reader
-from benchmarks.performance_comparison import correr_benchmark_completo
+from benchmarks.performance_comparison import run_benchmarks
 
 load_dotenv()
 data_file= str(os.getenv("DATA_FILE"))
@@ -30,7 +30,7 @@ def main():
     print(f"Knapsack capacity: {problem.capacity}")
     print("------------------------------")
         
-    correr_benchmark_completo("aaa", problem)
+    run_benchmarks("aaa", problem)
    
 
 main()
