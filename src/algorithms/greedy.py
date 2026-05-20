@@ -17,4 +17,4 @@ def greedy(problem: KnapsackProblem):
             total_value += problem.values[i]
             total_weight += problem.weights[i]
         
-    return solution_bits, total_value
+    return solution_bits, total_value, total_weight

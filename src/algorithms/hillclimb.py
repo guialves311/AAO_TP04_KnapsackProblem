@@ -1,6 +1,7 @@
-def hill_climbing(problem, initial_bits):
+def hill_climbing(problem, initial_bits, initial_value, initial_weight):
     current_bits = list(initial_bits)
-    current_value = problem.calculate_value(current_bits)
+    current_value = initial_value
+    current_weight = initial_weight
     
     improved = True
     while improved:
@@ -18,7 +19,8 @@ def hill_climbing(problem, initial_bits):
             if weight <= problem.capacity and val > current_value:
                 current_bits = neighbor
                 current_value = val
+                current_weight = weight
                 improved = True
                 break 
                 
-    return current_bits
+    return current_bits, current_value, current_weight

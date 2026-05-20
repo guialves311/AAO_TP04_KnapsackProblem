@@ -1,12 +1,13 @@
 import random
 
-def tabu_search(problem, initial_bits, num_iterations, tabu_size):
+def tabu_search(problem, initial_bits, initial_value, initial_weight, num_iterations, tabu_size):
     current_bits = list(initial_bits)
-    current_value = problem.calculate_value(current_bits)
-    current_weight = problem.calculate_weight(current_bits)
+    current_value = initial_value
+    current_weight = initial_weight
     
     best_bits = list(current_bits)
     best_value = current_value
+    best_weight = current_weight
 
     tabu_list = []
     
@@ -48,5 +49,6 @@ def tabu_search(problem, initial_bits, num_iterations, tabu_size):
         if current_value > best_value:
             best_bits = list(current_bits)
             best_value = current_value
+            best_weight = current_weight
             
-    return best_bits, best_value
+    return best_bits, best_value, best_weight

@@ -2,13 +2,13 @@ import math
 import random
 import os
 
-def simulated_annealing(problem, initial_bits, num_iterations):
+def simulated_annealing(problem, initial_bits, initial_value, initial_weight, num_iterations):
     temperature = float(os.getenv("TEMPERATURE", 100000.0))
     cooling_rate = float(os.getenv("COOLING_RATE", 0.995))
-        
+
     current_bits = list(initial_bits)
-    current_value = problem.calculate_value(current_bits)
-    current_weight = problem.calculate_weight(current_bits)
+    current_value = initial_value
+    current_weight = initial_weight
     
     # Keep track of the best solution found
     best_bits = list(current_bits)
@@ -54,4 +54,4 @@ def simulated_annealing(problem, initial_bits, num_iterations):
         # Cool down the temperature
         temperature *= cooling_rate
         
-    return best_bits, best_value
+    return best_bits, best_value, current_weight
