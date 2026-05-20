@@ -10,27 +10,23 @@ from utils.instanceReader import instance_reader
 from benchmarks.performance_comparison import run_benchmarks
 
 load_dotenv()
-data_file= str(os.getenv("DATA_FILE"))
+data_folder= str(os.getenv("DATA_FILE"))
 num_iterations= int(os.getenv("NUM_ITERATIONS"))
 
 def main():
-    # Check if the instance file exists
-    if not Path(data_file).exists():
-        print(f"Error: Instance file {data_file} not found!")
+    path = Path(data_folder)
+
+    if not path.exists():
+        print(f"Error: Instance file {data_folder} not found!")
         return
 
-    print(f"Instância: {data_file}")
-    
-    # ----------------------------
-    # Load instance data
-    # ----------------------------
-    problem = instance_reader(data_file)
-    
-    print(f"Number of items: {problem.num_items}")
-    print(f"Knapsack capacity: {problem.capacity}")
-    print("------------------------------")
+    for file_path in path.glob("*.txt"):
+        print(f"Instância: {file_path}")
+        problem = instance_reader(file_path)
         
-    run_benchmarks("aaa", problem)
-   
-
+        print(f"Number of items: {problem.num_items}")
+        print(f"Knapsack capacity: {problem.capacity}")
+        print("------------------------------")
+            
+        run_benchmarks(f"{file_path}", problem)
 main()
