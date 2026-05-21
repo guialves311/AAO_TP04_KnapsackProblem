@@ -70,12 +70,14 @@ def simulated_annealing(problem: KnapsackProblem, initial_bits: list, initial_va
                 probability = math.exp(delta / temperature) if temperature > 0 else 0
                 accept = random.random() < probability
             
+            # If accepted, switch solution bits and current information
             if accept:
                 current_bits[item_remove] = 0
                 current_bits[item_add] = 1
                 current_value = neighbor_value
                 current_weight = neighbor_weight
                 
+                # If the current value is higher than best value, update the best solution and best value
                 if current_value > best_value:
                     best_bits = list(current_bits)
                     best_value = current_value

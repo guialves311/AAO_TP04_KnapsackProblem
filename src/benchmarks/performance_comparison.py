@@ -1,14 +1,36 @@
 import time
 import numpy as np
 
-# Importações dos teus algoritmos
 from algorithms.greedy import greedy
 from algorithms.hillclimb import hill_climbing
 from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 from algorithms.simulated_annealing import simulated_annealing
 from algorithms.tabu_search import tabu_search
+from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def algorithm_time(algorithm_function, problem, num_runs=1, **kwargs):
+def algorithm_time(algorithm_function: callable, problem: KnapsackProblem, num_runs=1, **kwargs):
+    """Measures the execution time and results of an algorithm over x runs.
+    
+    Executes the given algorithm function x times on the same problem
+    instance, collecting the execution time, returned value, and returned weight
+    from each run.
+    
+    Args:
+        algorithm_function (callable): The algorithm function to execute. It must
+                                       accept problem as its first argument and
+                                       any additional parameters passed through
+                                       kwargs.
+        problem (KnapsackProblem): The knapsack problem instance.
+        num_runs (int): Number of times the algorithm should be executed.
+        **kwargs: Additional keyword arguments forwarded to algorithm_function.
+    
+    Returns:
+        tuple: A tuple containing:
+            - times (list): Execution time of each run in seconds.
+            - results (list): Returned values from each run.
+            - weights (list): Returned weights from each run.
+    """
+    
     times = []
     results = []
     weights = []
@@ -22,7 +44,17 @@ def algorithm_time(algorithm_function, problem, num_runs=1, **kwargs):
         weights.append(weight)
     return times, results, weights
 
-def run_benchmarks(instance_name, problem_instance, num_iterations=1000):
+def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_iterations: int):
+    """
+        Executes all algorithms and presents the data through the console, such as the Origin of the initial solution,
+        number of runs, best value, average value and average time.
+        
+        Args:
+            instance_name (str): Name to be displayed at the data table
+            problem_instance (KnapsackProblem): Holds all KP01 info to be used
+            num_iterations (int): Number of iterations for Tabu Search and Simulated Annealing
+    """
+    
     print("\n" + "="*80)
     print(f" EXECUÇÃO DE BENCHMARK: {instance_name}")
     print(f" NÚMERO DE ITENS: {problem_instance.num_items} | CAPACIDADE: {problem_instance.capacity}")
@@ -33,10 +65,10 @@ def run_benchmarks(instance_name, problem_instance, num_iterations=1000):
     print("-"*80)
 
     # =========================================================================
-    # 1. ALGORITMOS BASE (Soluções Iniciais)
+    # 1. BASE ALGORITHMS (INITIAL SOLUTIONS)
     # =========================================================================
     
-    # --- GREEDY NORMAL ---
+    # --- GREEDY ---
     t_greedy, v_greedy, w_greedy = algorithm_time(greedy, problem_instance)
     greedy_bits, greedy_val, greedy_weight = greedy(problem_instance) 
     print(f"{'Greedy Normal':<25} | {'N/A':<18} | {'5':<15} | {greedy_val:<15} | {np.mean(v_greedy):.2f} | {np.mean(t_greedy):.6f}")
@@ -50,7 +82,7 @@ def run_benchmarks(instance_name, problem_instance, num_iterations=1000):
     print("-"*80)
 
     # =========================================================================
-    # 2. Algorithms with origem in Greedy Normal
+    # 2. Algorithms with origin in Greedy
     # =========================================================================
     
     # --- Simulated Annealing ---
@@ -61,14 +93,14 @@ def run_benchmarks(instance_name, problem_instance, num_iterations=1000):
     t_tabu, v_tabu, w_tabu = algorithm_time(tabu_search, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations, tabu_size=10)
     print(f"{'Tabu Search':<25} | {'Greedy':<18} | {'5':<15} | {max(v_tabu):<15} | {np.mean(v_tabu):.2f} | {np.mean(t_tabu):.6f}")
 
-    # --- Hill Climbing (Garante que devolve tuplo (bits, valor) no teu ficheiro) ---
+    # --- Hill Climbing ---
     t_hc, v_hc, w_hc = algorithm_time(hill_climbing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
     print(f"{'Hill Climbing':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
 
     print("-"*80)
 
     # =========================================================================
-    # 3. Algorithms with origem in Enhanced Greedy
+    # 3. Algorithms with origin in Enhanced Greedy
     # =========================================================================
     
     # --- Simulated Annealing ---

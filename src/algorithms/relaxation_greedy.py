@@ -70,6 +70,8 @@ def enhanced_greedy(problem: KnapsackProblem, x_fractions: list):
     capacity_left = problem.capacity
     total_value = 0
     total_weight = 0
+    
+    # Initialize the solution array
     solution_bits = [0] * problem.num_items
     
     # Try to add items in sorted order 

@@ -28,5 +28,5 @@ def main():
         print(f"Knapsack capacity: {problem.capacity}")
         print("------------------------------")
             
-        run_benchmarks(f"{file_path}", problem)
+        run_benchmarks(f"{file_path}", problem, num_iterations)
 main()

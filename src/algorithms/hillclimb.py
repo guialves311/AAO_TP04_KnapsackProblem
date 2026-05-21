@@ -40,6 +40,7 @@ def hill_climbing(problem: KnapsackProblem, initial_bits: list, initial_value: i
             neighbor = list(current_bits)
             neighbor[i] = 1 - neighbor[i] # Flip bit
             
+            # Obtains the values and weights of the solution to be tested from the KP class functions
             val = problem.calculate_value(neighbor)
             weight = problem.calculate_weight(neighbor)
             

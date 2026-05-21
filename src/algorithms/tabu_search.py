@@ -42,10 +42,11 @@ def tabu_search(problem: KnapsackProblem, initial_bits: list, initial_value: int
         if not items_in or not items_out:
             continue # Skip if no swaps possible
             
-        # Geerate neighbor by swapping one item in with one item out
+        # Generate neighbor by swapping one item in with one item out
         item_remove = random.choice(items_in)
         item_add = random.choice(items_out)
         
+        # Stores the updated weights and values with the swapped item
         neighbor_weight = current_weight - problem.weights[item_remove] + problem.weights[item_add]
         neighbor_value = current_value - problem.values[item_remove] + problem.values[item_add]
         
