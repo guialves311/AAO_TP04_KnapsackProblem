@@ -28,12 +28,15 @@ def hill_climbing(problem: KnapsackProblem, initial_bits: list, initial_value: i
     current_value = initial_value
     current_weight = initial_weight
     
+    # To track if an improvement was made in the current iteration
     improved = True
+    # Continue searching until no improvement is found
     while improved:
         improved = False
         
         # Explore neighbors by flipping each bit at a time
         for i in range(problem.num_items):
+            # Create a neighbor solution by flipping the 0/1 bit at position i  
             neighbor = list(current_bits)
             neighbor[i] = 1 - neighbor[i] # Flip bit
             

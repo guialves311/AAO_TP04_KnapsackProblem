@@ -34,7 +34,6 @@ def tabu_search(problem: KnapsackProblem, initial_bits: list, initial_value: int
 
     tabu_list = []
     
-    
     for _ in range(num_iterations):
         # Identify item current in and out of knapsack
         items_in = [i for i, bit in enumerate(current_bits) if bit == 1]
@@ -53,7 +52,7 @@ def tabu_search(problem: KnapsackProblem, initial_bits: list, initial_value: int
         # Represent the swap
         move = (item_remove, item_add)
         
-        # Accept move if valid (doesn't exceed capacity) and not tabu, or improves global best
+        # Accept move if valid (doesn't exceed capacity) and not tabu (if it improves global best)
         aspiration_criterion = neighbor_value > best_value
         move_allowed = move not in tabu_list or aspiration_criterion
         

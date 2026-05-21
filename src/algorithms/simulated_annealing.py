@@ -42,6 +42,7 @@ def simulated_annealing(problem: KnapsackProblem, initial_bits: list, initial_va
     best_bits = list(current_bits)
     best_value = current_value
 
+
     for _ in range(num_iterations):
         # Get items inside and outside the knapsack
         items_in = [i for i, bit in enumerate(current_bits) if bit == 1]

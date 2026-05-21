@@ -30,8 +30,11 @@ def greedy(problem: KnapsackProblem):
     
     # Try to add items in sorted order if they fit
     for i in indices_sorted:
+        #If the item can be added without exceeding capacity, add it to the solution
         if total_weight + problem.weights[i] <= problem.capacity:
+            # Mark the item as included in the solution
             solution_bits[i] = 1
+            # Update total value and weight
             total_value += problem.values[i]
             total_weight += problem.weights[i]
         
