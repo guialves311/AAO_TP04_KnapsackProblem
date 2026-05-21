@@ -5,6 +5,7 @@ def instance_reader(file_path):
     weights = []
     capacity = 0
     
+    # Open the file to read
     with open(file_path, 'r') as f:
         for line in f:
             line = line.strip()

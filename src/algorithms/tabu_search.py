@@ -1,6 +1,29 @@
 import random
+from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def tabu_search(problem, initial_bits, initial_value, initial_weight, num_iterations, tabu_size):
+def tabu_search(problem: KnapsackProblem, initial_bits: list, initial_value: int, initial_weight: int, num_iterations: int, tabu_size: int):
+    """Solves the 0/1 Knapsack Problem using Tabu Search.
+    
+    A metaheuristic optimization algorithm that maintains a tabu list of recent moves
+    to avoid cycling and escape local optima. Allows moves to worse solutions unless 
+    they improve the global best.
+    
+    Args:
+        problem: The knapsack problem instance
+        initial_bits (list): Initial binary solution
+        initial_value (int): Value of the initial solution
+        initial_weight (int): Weight of the initial solution
+        num_iterations (int): Number of iterations to perform
+        tabu_size (int): Maximum size of the tabu list
+    
+    Returns:
+        tuple: A tuple containing:
+            - best_bits (list): Best binary solution found
+            - best_value (int): Best value achieved
+            - best_weight (int): Weight of the best solution
+    """
+    
+    # Create a new list in order to not alter the original list
     current_bits = list(initial_bits)
     current_value = initial_value
     current_weight = initial_weight
@@ -10,7 +33,6 @@ def tabu_search(problem, initial_bits, initial_value, initial_weight, num_iterat
     best_weight = current_weight
 
     tabu_list = []
-    
     
     for _ in range(num_iterations):
         # Identify item current in and out of knapsack
@@ -30,7 +52,7 @@ def tabu_search(problem, initial_bits, initial_value, initial_weight, num_iterat
         # Represent the swap
         move = (item_remove, item_add)
         
-        # Accept move if valid (doesn't exceed capacity) and not tabu, or improves global best
+        # Accept move if valid (doesn't exceed capacity) and not tabu (if it improves global best)
         aspiration_criterion = neighbor_value > best_value
         move_allowed = move not in tabu_list or aspiration_criterion
         
