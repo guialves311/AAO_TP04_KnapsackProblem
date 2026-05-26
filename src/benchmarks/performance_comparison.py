@@ -87,16 +87,16 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     # =========================================================================
     
     # --- Simulated Annealing ---
-    t_sa, v_sa, w_sa = algorithm_time(simulated_annealing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations)
-    print(f"{'Simulated Annealing':<25} | {'Greedy':<18} | {'5':<15} | {max(v_sa):<15} | {np.mean(v_sa):.2f} | {np.mean(t_sa):.6f}")
+    #t_sa, v_sa, w_sa = algorithm_time(simulated_annealing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations)
+    #print(f"{'Simulated Annealing':<25} | {'Greedy':<18} | {'5':<15} | {max(v_sa):<15} | {np.mean(v_sa):.2f} | {np.mean(t_sa):.6f}")
 
     # --- Tabu Search ---
-    t_tabu, v_tabu, w_tabu = algorithm_time(tabu_search, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations, tabu_size=10)
-    print(f"{'Tabu Search':<25} | {'Greedy':<18} | {'5':<15} | {max(v_tabu):<15} | {np.mean(v_tabu):.2f} | {np.mean(t_tabu):.6f}")
+    #t_tabu, v_tabu, w_tabu = algorithm_time(tabu_search, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations, tabu_size=10)
+    #print(f"{'Tabu Search':<25} | {'Greedy':<18} | {'5':<15} | {max(v_tabu):<15} | {np.mean(v_tabu):.2f} | {np.mean(t_tabu):.6f}")
 
     # --- Hill Climbing ---
-    t_hc, v_hc, w_hc = algorithm_time(hill_climbing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
-    print(f"{'Hill Climbing':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
+    #t_hc, v_hc, w_hc = algorithm_time(hill_climbing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
+    #print(f"{'Hill Climbing':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
     
     # --- Swap Search ---
     t_sw, v_sw, w_sw = algorithm_time(swap, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
@@ -109,16 +109,16 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     # =========================================================================
     
     # --- Simulated Annealing ---
-    t_sa_eg, v_sa_eg, w_sa_eg = algorithm_time(simulated_annealing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations)
-    print(f"{'Simulated Annealing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_sa_eg):<15} | {np.mean(v_sa_eg):.2f} | {np.mean(t_sa_eg):.6f}")
+    #t_sa_eg, v_sa_eg, w_sa_eg = algorithm_time(simulated_annealing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations)
+    #print(f"{'Simulated Annealing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_sa_eg):<15} | {np.mean(v_sa_eg):.2f} | {np.mean(t_sa_eg):.6f}")
 
     # --- Tabu Search ---
-    t_tabu_eg, v_tabu_eg, w_tabu_eg = algorithm_time(tabu_search, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations, tabu_size=10)
-    print(f"{'Tabu Search':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_tabu_eg):<15} | {np.mean(v_tabu_eg):.2f} | {np.mean(t_tabu_eg):.6f}")
+    #t_tabu_eg, v_tabu_eg, w_tabu_eg = algorithm_time(tabu_search, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations, tabu_size=10)
+    #print(f"{'Tabu Search':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_tabu_eg):<15} | {np.mean(v_tabu_eg):.2f} | {np.mean(t_tabu_eg):.6f}")
 
     # --- Hill Climbing ---
-    t_hc_eg, v_hc_eg, w_hc_eg = algorithm_time(hill_climbing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
-    print(f"{'Hill Climbing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {v_hc_eg[0]:<15} | {np.mean(v_hc_eg):.2f} | {np.mean(t_hc_eg):.6f}")
+    #t_hc_eg, v_hc_eg, w_hc_eg = algorithm_time(hill_climbing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
+    # print(f"{'Hill Climbing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {v_hc_eg[0]:<15} | {np.mean(v_hc_eg):.2f} | {np.mean(t_hc_eg):.6f}")
     
     # --- Swap ---
     t_sw_eg, v_sw_eg, w_sw_eg = algorithm_time(swap, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
