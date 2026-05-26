@@ -1,6 +1,6 @@
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def swap(problem: KnapsackProblem, initial_solution: list, weights: int, values: int, capacity: int):
+def swap(problem: KnapsackProblem, initial_solution: list):
     
     """Solves the 0/1 Knapsack Problem using Swap Heuristic.
     
@@ -11,23 +11,24 @@ def swap(problem: KnapsackProblem, initial_solution: list, weights: int, values:
     Args:
         problem (KnapsackProblem): The knapsack problem instance containing items,
                                    weights, values, and capacity
-        initial_bits (list): Initial binary solution
-        initial_value (int): Value of the initial solution
-        initial_weight (int): Weight of the initial solution
+        initial_solution (list): Initial binary solution
 
     Returns:
         tuple: A tuple containing:
-            - current_bits (list): Binary solution at local optimum
+            - current_solution (list): Binary solution at local optimum
             - current_value (int): Value of the local optimum
             - current_weight (int): Weight of the local optimum solution
     """
+    
+    # Window for the search cycles
+    n = problem.num_items
     
     # Create a new list in order to not alter the original list
     current_solution = list(initial_solution)
     
     # Inserts the initial solution value and weight
-    current_weight = weights
-    current_value = values
+    current_weight = problem.calculate_weight(current_solution)
+    current_value = problem.calculate_value(current_solution)
     
     # To track if an improvement was made in the current iteration
     improved = True
@@ -37,24 +38,21 @@ def swap(problem: KnapsackProblem, initial_solution: list, weights: int, values:
         improved = False
         
         # Iterate over all items inside the knapsack
-        for i in range(problem.num_items):
+        for i in range(n):
             if current_solution[i] == 1:
                 
                 # Iterate over all items outside the knapsack
-                for j in range(problem.num_items):
+                for j in range(n):
                     if current_solution[j] == 0:
-                        # Obtains the values and weights of the solution to be tested from the KP class functions
-                        weight = problem.calculate_weight(current_solution)
-                        val = problem.calculate_value(current_solution)
                         
                         # DELTA: Calculate the difference
-                        weight_diff = weight[j] - weight[i]
-                        value_diff = val[j] - val[i]
+                        weight_diff = problem.weights[j] - problem.weights[i]
+                        value_diff = problem.values[j] - problem.values[i]
                         
                         # Condition for improvement:
                         # 1. New weight cannot go over the capacity
                         # 2. New value has to be higher than the intial value
-                        if current_weight + weight_diff <= capacity and value_diff > 0:
+                        if current_weight + weight_diff <= problem.capacity and value_diff > 0:
                             
                             # Execute swap
                             current_solution[i] = 0
