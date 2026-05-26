@@ -6,6 +6,7 @@ from algorithms.hillclimb import hill_climbing
 from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
 from algorithms.simulated_annealing import simulated_annealing
 from algorithms.tabu_search import tabu_search
+from algorithms.swap import swap
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
 def algorithm_time(algorithm_function: callable, problem: KnapsackProblem, num_runs=1, **kwargs):
@@ -96,6 +97,10 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     # --- Hill Climbing ---
     t_hc, v_hc, w_hc = algorithm_time(hill_climbing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
     print(f"{'Hill Climbing':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
+    
+    # --- Swap Search ---
+    t_sw, v_sw, w_sw = algorithm_time(swap, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
+    print(f"{'Swap':<25} | {'Greedy':<18} | {'5':<15} | {v_sw[0]:<15} | {np.mean(v_sw):.2f} | {np.mean(t_sw):.6f}")
 
     print("-"*80)
 
@@ -114,5 +119,9 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     # --- Hill Climbing ---
     t_hc_eg, v_hc_eg, w_hc_eg = algorithm_time(hill_climbing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
     print(f"{'Hill Climbing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {v_hc_eg[0]:<15} | {np.mean(v_hc_eg):.2f} | {np.mean(t_hc_eg):.6f}")
+    
+    # --- Swap ---
+    t_sw_eg, v_sw_eg, w_sw_eg = algorithm_time(swap, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
+    print(f"{'Swap':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {v_sw_eg[0]:<15} | {np.mean(v_sw_eg):.2f} | {np.mean(t_sw_eg):.6f}")
 
     print("="*80 + "\n")
