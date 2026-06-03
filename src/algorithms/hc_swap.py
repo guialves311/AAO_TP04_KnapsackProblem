@@ -1,8 +1,8 @@
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def swap(problem: KnapsackProblem, initial_bits: list, initial_value: int, initial_weight: int):
+def hc_swap(problem: KnapsackProblem, initial_bits: list, initial_value: int, initial_weight: int):
     
-    """Improves a Knapsack solution using Swap Heuristic.
+    """Improves a Knapsack solution using the heuristic Hill-Climbing with the Swap neighborhood structure.
     
     A local search heuristic that looks to improve the initial solution provided by removing an item
     from the knapsack and replacing it with an item outside the knapsack, as long as the exchange 

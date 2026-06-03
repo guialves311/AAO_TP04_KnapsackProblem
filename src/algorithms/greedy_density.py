@@ -1,6 +1,6 @@
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def greedy(problem: KnapsackProblem):
+def greedy_density(problem: KnapsackProblem):
     """Solves the 0/1 Knapsack Problem using the Greedy algorithm.
     
     Selects items in descending order of their value-to-weight ratio, 
