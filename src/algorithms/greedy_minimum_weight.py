@@ -1,9 +1,9 @@
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def greedy(problem: KnapsackProblem):
+def greedy_min_weight(problem: KnapsackProblem):
     """Solves the 0/1 Knapsack Problem using the Greedy algorithm.
     
-    Selects items in descending order of their value-to-weight ratio, 
+    Selects items in ascending order of their weight, 
     greedily adding items that fit within the knapsack capacity.
     
     Args:
@@ -17,10 +17,10 @@ def greedy(problem: KnapsackProblem):
             - total_weight (int): Total weight of items in the knapsack
     """
     
-    # Sort items by descending order of value to weight
+    # Sort items by ascending order of weight
     indices_sorted = sorted(range(problem.num_items), 
-                            key=lambda i: problem.values[i] / problem.weights[i], 
-                            reverse=True)
+                            key=lambda i: problem.weights[i], 
+                            reverse=False)
     
     total_value = 0
     total_weight = 0

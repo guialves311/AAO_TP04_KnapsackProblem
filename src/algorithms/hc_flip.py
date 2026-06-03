@@ -1,7 +1,8 @@
 from algorithms.classes.KnapsackProblem import KnapsackProblem
 
-def hill_climbing(problem: KnapsackProblem, initial_bits: list, initial_value: int, initial_weight: int):
-    """Solves the 0/1 Knapsack Problem using Hill Climbing.
+def hc_flip(problem: KnapsackProblem, initial_bits: list, initial_value: int, initial_weight: int):
+    
+    """Solves the 0/1 Knapsack Problem using Hill Climbing with Flip neighborhood structure.
     
     A local search algorithm that iteratively explores neighboring solutions by 
     flipping one bit at a time, accepting only improvements until a local optimum 

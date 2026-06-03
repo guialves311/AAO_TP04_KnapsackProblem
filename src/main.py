@@ -1,11 +1,6 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
-from algorithms.greedy import greedy
-from algorithms.simulated_annealing import simulated_annealing
-from algorithms.hillclimb import hill_climbing
-from algorithms.tabu_search import tabu_search
 from utils.instanceReader import instance_reader
 from benchmarks.performance_comparison import run_benchmarks
 

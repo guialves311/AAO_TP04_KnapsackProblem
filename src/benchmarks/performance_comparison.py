@@ -1,9 +1,10 @@
 import time
 import numpy as np
 
-from algorithms.greedy import greedy
-from algorithms.hillclimb import hill_climbing
-from algorithms.relaxation_greedy import relaxation_greedy, enhanced_greedy
+from algorithms.greedy_density import greedy_density
+from algorithms.greedy_minimum_weight import greedy_min_weight
+from algorithms.hc_flip import hc_flip 
+from algorithms.hc_swap import hc_swap 
 from algorithms.simulated_annealing import simulated_annealing
 from algorithms.tabu_search import tabu_search
 from algorithms.classes.KnapsackProblem import KnapsackProblem
@@ -68,17 +69,15 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     # 1. BASE ALGORITHMS (INITIAL SOLUTIONS)
     # =========================================================================
     
-    # --- GREEDY ---
-    t_greedy, v_greedy, w_greedy = algorithm_time(greedy, problem_instance)
-    greedy_bits, greedy_val, greedy_weight = greedy(problem_instance) 
-    print(f"{'Greedy Normal':<25} | {'N/A':<18} | {'5':<15} | {greedy_val:<15} | {np.mean(v_greedy):.2f} | {np.mean(t_greedy):.6f}")
+    # --- GREEDY DENSITY ---
+    t_greedy, v_greedy, w_greedy = algorithm_time(greedy_density, problem_instance)
+    greedy_bits, greedy_val, greedy_weight = greedy_density(problem_instance) 
+    print(f"{'Greedy Density':<25} | {'N/A':<18} | {'5':<15} | {greedy_val:<15} | {np.mean(v_greedy):.2f} | {np.mean(t_greedy):.6f}")
 
-    # --- ENHANCED GREEDY ---
-    x_fractions, _ = relaxation_greedy(problem_instance)
-    t_enhanced, v_enhanced, w_enhanced = algorithm_time(enhanced_greedy, problem_instance, x_fractions=x_fractions)
-    enhanced_bits, enhanced_val, enhanced_weight = enhanced_greedy(problem_instance, x_fractions)
-    print(f"{'Enhanced Greedy':<25} | {'N/A':<18} | {'5':<15} | {enhanced_val:<15} | {np.mean(v_enhanced):.2f} | {np.mean(t_enhanced):.6f}")
-    
+    # --- GREEDY MINIMUM WEIGHT ---
+    t_greedy_w, v_greedy_w, w_greedy_w = algorithm_time(greedy_min_weight, problem_instance)
+    greedy_min_weight_bits, greedy_min_weight_val, greedy_min_weight_weight = greedy_min_weight(problem_instance)
+    print(f"{'Greedy Minimum':<25} | {'N/A':<18} | {'5':<15} | {v_greedy_w[0]:<15} | {np.mean(v_greedy_w[0]):.2f} | {np.mean(t_greedy_w[0]):.6f}")
     print("-"*80)
 
     # =========================================================================
@@ -93,26 +92,34 @@ def run_benchmarks(instance_name: str, problem_instance: KnapsackProblem, num_it
     t_tabu, v_tabu, w_tabu = algorithm_time(tabu_search, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight, num_iterations=num_iterations, tabu_size=10)
     print(f"{'Tabu Search':<25} | {'Greedy':<18} | {'5':<15} | {max(v_tabu):<15} | {np.mean(v_tabu):.2f} | {np.mean(t_tabu):.6f}")
 
-    # --- Hill Climbing ---
-    t_hc, v_hc, w_hc = algorithm_time(hill_climbing, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
-    print(f"{'Hill Climbing':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
+    # --- HC_Flip ---
+    t_hc, v_hc, w_hc = algorithm_time(hc_flip, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
+    print(f"{'HC_Flip':<25} | {'Greedy':<18} | {'5':<15} | {v_hc[0]:<15} | {np.mean(v_hc):.2f} | {np.mean(t_hc):.6f}")
+    
+    # --- HC_Swap ---
+    t_sw, v_sw, w_sw = algorithm_time(hc_swap, problem_instance, initial_bits=greedy_bits, initial_value=greedy_val, initial_weight=greedy_weight)
+    print(f"{'HC_Swap':<25} | {'Greedy':<18} | {'5':<15} | {v_sw[0]:<15} | {np.mean(v_sw):.2f} | {np.mean(t_sw):.6f}")
 
     print("-"*80)
 
     # =========================================================================
-    # 3. Algorithms with origin in Enhanced Greedy
+    # 3. Algorithms with origin in Greedy Minimum Weight
     # =========================================================================
     
     # --- Simulated Annealing ---
-    t_sa_eg, v_sa_eg, w_sa_eg = algorithm_time(simulated_annealing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations)
-    print(f"{'Simulated Annealing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_sa_eg):<15} | {np.mean(v_sa_eg):.2f} | {np.mean(t_sa_eg):.6f}")
+    t_sa_eg, v_sa_eg, w_sa_eg = algorithm_time(simulated_annealing, problem_instance, initial_bits=greedy_min_weight_bits, initial_value=greedy_min_weight_val, initial_weight=greedy_min_weight_weight, num_iterations=num_iterations)
+    print(f"{'Simulated Annealing':<25} | {'Greedy Minimum Weight':<18} | {'5':<15} | {max(v_sa_eg):<15} | {np.mean(v_sa_eg):.2f} | {np.mean(t_sa_eg):.6f}")
 
     # --- Tabu Search ---
-    t_tabu_eg, v_tabu_eg, w_tabu_eg = algorithm_time(tabu_search, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight, num_iterations=num_iterations, tabu_size=10)
-    print(f"{'Tabu Search':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {max(v_tabu_eg):<15} | {np.mean(v_tabu_eg):.2f} | {np.mean(t_tabu_eg):.6f}")
+    t_tabu_eg, v_tabu_eg, w_tabu_eg = algorithm_time(tabu_search, problem_instance, initial_bits=greedy_min_weight_bits, initial_value=greedy_min_weight_val, initial_weight=greedy_min_weight_weight, num_iterations=num_iterations, tabu_size=10)
+    print(f"{'Tabu Search':<25} | {'Greedy Minimum Weight':<18} | {'5':<15} | {max(v_tabu_eg):<15} | {np.mean(v_tabu_eg):.2f} | {np.mean(t_tabu_eg):.6f}")
 
     # --- Hill Climbing ---
-    t_hc_eg, v_hc_eg, w_hc_eg = algorithm_time(hill_climbing, problem_instance, initial_bits=enhanced_bits, initial_value=enhanced_val, initial_weight=enhanced_weight)
-    print(f"{'Hill Climbing':<25} | {'Enhanced Greedy':<18} | {'5':<15} | {v_hc_eg[0]:<15} | {np.mean(v_hc_eg):.2f} | {np.mean(t_hc_eg):.6f}")
+    t_hc_eg, v_hc_eg, w_hc_eg = algorithm_time(hc_flip, problem_instance, initial_bits=greedy_min_weight_bits, initial_value=greedy_min_weight_val, initial_weight=greedy_min_weight_weight)
+    print(f"{'HC_Flip':<25} | {'Greedy Minimum Weight':<18} | {'5':<15} | {v_hc_eg[0]:<15} | {np.mean(v_hc_eg):.2f} | {np.mean(t_hc_eg):.6f}")
+    
+    # --- HC_Swap ---
+    t_sw_eg, v_sw_eg, w_sw_eg = algorithm_time(hc_swap, problem_instance, initial_bits=greedy_min_weight_bits, initial_value=greedy_min_weight_val, initial_weight=greedy_min_weight_weight)
+    print(f"{'HC_Swap':<25} | {'Greedy Minimum Weight':<18} | {'5':<15} | {v_sw_eg[0]:<15} | {np.mean(v_sw_eg):.2f} | {np.mean(t_sw_eg):.6f}")
 
     print("="*80 + "\n")
